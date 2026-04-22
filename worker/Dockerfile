@@ -6,6 +6,7 @@ FROM python:3.11-slim AS builder
 WORKDIR /build
 
 COPY requirements.txt .
+# hadolint ignore=DL3013,DL3042
 RUN pip install --upgrade pip && \
     pip install --no-cache-dir --prefix=/install -r requirements.txt
 

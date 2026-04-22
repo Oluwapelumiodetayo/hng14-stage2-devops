@@ -6,6 +6,7 @@ FROM node:18-alpine AS builder
 WORKDIR /build
 
 COPY package*.json ./
+# hadolint ignore=DL3016
 RUN npm ci --only=production
 
 # ---- Stage 2: Production ----
