@@ -44,16 +44,19 @@ jobs:
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: api/Dockerfile
+          failure-threshold: error
 
       - name: Lint worker/Dockerfile with hadolint
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: worker/Dockerfile
+          failure-threshold: error
 
       - name: Lint frontend/Dockerfile with hadolint
         uses: hadolint/hadolint-action@v3.1.0
         with:
           dockerfile: frontend/Dockerfile
+          failure-threshold: error
 
   test:
     name: Test
@@ -149,18 +152,18 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build API image for scanning
-        run: docker build -t scan/api:latest ./api
+        run: docker build -t api:${{ github.sha }} ./api
 
       - name: Build Worker image for scanning
-        run: docker build -t scan/worker:latest ./worker
+        run: docker build -t worker:${{ github.sha }} ./worker
 
       - name: Build Frontend image for scanning
-        run: docker build -t scan/frontend:latest ./frontend
+        run: docker build -t frontend:${{ github.sha }} ./frontend
 
       - name: Scan API with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: scan/api:latest
+          image-ref: api:${{ github.sha }}
           format: sarif
           output: trivy-api.sarif
           severity: CRITICAL
@@ -170,7 +173,7 @@ jobs:
       - name: Scan Worker with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: scan/worker:latest
+          image-ref: worker:${{ github.sha }}
           format: sarif
           output: trivy-worker.sarif
           severity: CRITICAL
@@ -180,7 +183,7 @@ jobs:
       - name: Scan Frontend with Trivy
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: scan/frontend:latest
+          image-ref: frontend:${{ github.sha }}
           format: sarif
           output: trivy-frontend.sarif
           severity: CRITICAL
@@ -278,10 +281,10 @@ jobs:
               done
 
               if [ "$HEALTHY" = "false" ]; then
-                echo "ABORT: $SERVICE health check failed. Old container kept."
+                echo "ABORT: $SERVICE health check failed."
                 exit 1
               fi
-              echo "$SERVICE OK."
+              echo "$SERVICE updated."
             done
             echo "=== Deploy complete ==="
           REMOTE

@@ -7,7 +7,6 @@ API_URL="http://localhost:8000"
 
 echo "=== Integration Test Start ==="
 
-# Wait for frontend health
 echo "Waiting for frontend..."
 ELAPSED=0
 until curl -sf "$FRONTEND_URL/health" > /dev/null 2>&1; do
@@ -22,7 +21,6 @@ until curl -sf "$FRONTEND_URL/health" > /dev/null 2>&1; do
 done
 echo "Frontend ready."
 
-# Submit job
 echo "Submitting job..."
 JOB_RESPONSE=$(curl -sf -X POST "$FRONTEND_URL/jobs" \
   -H "Content-Type: application/json" \
@@ -41,7 +39,6 @@ if [ -z "$JOB_ID" ]; then
 fi
 echo "Job ID: $JOB_ID"
 
-# Poll with timeout
 echo "Polling for completion..."
 ELAPSED=0
 while [ $ELAPSED -lt $TIMEOUT ]; do
@@ -54,7 +51,7 @@ while [ $ELAPSED -lt $TIMEOUT ]; do
   echo "  status=$STATUS elapsed=${ELAPSED}s"
 
   if [ "$STATUS" = "completed" ] || [ "$STATUS" = "done" ] || [ "$STATUS" = "success" ]; then
-    echo "=== Job completed! Integration test PASSED ==="
+    echo "=== Integration test PASSED ==="
     exit 0
   fi
 
