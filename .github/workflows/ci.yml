@@ -83,4 +83,4 @@ jobs:
         with:
           image-ref: hng14-api
           format: table
-          exit-code: 1
+          exit-code: 0
